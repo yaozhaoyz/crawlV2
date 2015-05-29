@@ -54,7 +54,7 @@ class picTextDetailSpider(CrawlSpider):
         except:
             pass;
 
-    def addslashes(s):
+    def addslashes(self,s):
         d = {'"':'\\"', "'":"\\'", "\0":"\\\0", "\\":"\\\\"}
         return ''.join(d.get(c, c) for c in s)
 
@@ -72,12 +72,16 @@ class picTextDetailSpider(CrawlSpider):
             if( "SUCCESS::" in jsonMap["ret"][0]):
                 jsontpDetail = jsonMap['data']['pages']
                 sql = "";
+                FileOut.write("pin_item\n")
                 if ttype=="pin_item":
-                    sql="update pin_item set picTextDetail=\"%s\",originComment=\"%s\" , storeInfo=\"%s\" where id=%s;"  %(addslashes(json.dumps(jsontpDetail)),addslashes(json.dumps(jsonRateInfo)),addslashes(json.dumps(jsonSeller)), tableId)
+                    FileOut.write("pin_item1\n")
+                    sql="update pin_item set picTextDetail=\"%s\",originComment=\"%s\" , storeInfo=\"%s\" where id=%s;"  %(self.addslashes(json.dumps(jsontpDetail)),self.addslashes(json.dumps(jsonRateInfo)),self.addslashes(json.dumps(jsonSeller)), tableId)
+                    FileOut.write("pin_item1\n")
                 elif ttype=="pin_item_compare":
                     sql="update pin_item_compare set level=%s where url=\"%s\";" %(jsonCreditLevel,tableId) 
                 FileOut.write(sql+"\n")
                 #FileOut.write("%s\1%s\1%s\1%s\1%s\1%s\1%s\n" %(tableId, tid,ttype, json.dumps(jsonSeller), json.dumps(jsonRateInfo),  json.dumps(jsontpDetail), json.dumps(jsonCreditLevel)))
             FileOut.flush();
-        except:
+        except Exception,e:
+            FileOut.write(str(e)+"\n")
             pass;
